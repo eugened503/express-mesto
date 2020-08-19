@@ -1,0 +1,22 @@
+{
+  "name": "express-mesto",
+  "version": "1.0.0",
+  "description": "Цель данного проекта - создание личной страницы пользователя с возможностью редактирования профиля и обмена фотографиями.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js"
+    
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.7.0",
+    "eslint-plugin-react": "^7.20.6",
+    "nodemon": "^2.0.4"
+  }
+}
