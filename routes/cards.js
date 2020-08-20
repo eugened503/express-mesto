@@ -5,7 +5,7 @@ const path = require('path');
 const cards = path.join(__dirname, '..', 'data', 'cards.json');
 const fs = require('fs').promises;
 
-router.get('/cards', (req, res) => { //передаем карточки пользователей
+router.get('/cards', (req, res) => { //передаем карточки
   fs.readFile(cards, 'utf8')
     .then((data) => {
       res
