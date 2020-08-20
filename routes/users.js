@@ -3,29 +3,26 @@
 const router = require('express').Router(); // создадим express router
 const path = require('path'); //подключаем модуль path
 const users = path.join(__dirname, '..', 'data', 'users.json'); //импортируем данные из файла users.json
-const fs = require('fs'); //подключаем модуль fs
+const fs = require('fs').promises; //подключаем модуль fs
 
 router.get('/users', (req, res) => { //передаем список юзеров
-  fs.readFile(users, function (err, data) {
-    if (err) {
-      return res
-        .status(500)
-        .send({ Error: err.message });
-    } else {
-      return res
+  fs.readFile(users, 'utf8')
+    .then((data) => {
+      res
         .status(200)
         .send(JSON.parse(data));
-    }
-  });
+    })
+    .catch(error => {
+      res
+        .status(500)
+        .send('Error');
+      console.log(error);
+    });
 });
 
 router.get('/users/:id', (req, res) => { //ищем юзера по id
-  fs.readFile(users, function (err, data) {
-    if (err) {
-      return res
-        .status(500)
-        .send({ Error: err.message });
-    } else {
+  fs.readFile(users, 'utf8')
+    .then((data) => {
       const currentUser = JSON.parse(data).find(user => user._id === req.params.id);
       if (currentUser) {
         return res
@@ -37,8 +34,13 @@ router.get('/users/:id', (req, res) => { //ищем юзера по id
         .send({
           message: 'Нет пользователя с таким ID'
         })
-    }
-  });
+    })
+    .catch(error => {
+      res
+        .status(500)
+        .send('Error');
+      console.log(error);
+    });
 });
 
 module.exports = router; // экспортируем express router

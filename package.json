@@ -4,10 +4,10 @@
   "description": "Цель данного проекта - создание личной страницы пользователя с возможностью редактирования профиля и обмена фотографиями.",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js"
-    
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
-  "author": "",
+  "author": "Eugene Larionov",
   "license": "ISC",
   "dependencies": {
     "eslint-config-airbnb-base": "^14.2.0",
