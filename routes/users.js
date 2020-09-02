@@ -1,46 +1,12 @@
 /* eslint-disable */
 
-const router = require('express').Router(); // создадим express router
-const path = require('path'); //подключаем модуль path
-const users = path.join(__dirname, '..', 'data', 'users.json'); //импортируем данные из файла users.json
-const fs = require('fs').promises; //подключаем модуль fs
+const userRouter = require('express').Router(); // создадим express router
+const { createUser, getIdUser, getAllUser, updateUserInfo, updateUserAvatar} = require('../controllers/users');
 
-router.get('/users', (req, res) => { //передаем список юзеров
-  fs.readFile(users, 'utf8')
-    .then((data) => {
-      res
-        .status(200)
-        .send(JSON.parse(data));
-    })
-    .catch(error => {
-      res
-        .status(500)
-        .send('Error');
-      console.log(error);
-    });
-});
+userRouter.post('/', createUser);
+userRouter.get('/', getAllUser);
+userRouter.get('/:id', getIdUser);
+userRouter.patch('/me', updateUserInfo);
+userRouter.patch('/me/avatar', updateUserAvatar);
 
-router.get('/users/:id', (req, res) => { //ищем юзера по id
-  fs.readFile(users, 'utf8')
-    .then((data) => {
-      const currentUser = JSON.parse(data).find(user => user._id === req.params.id);
-      if (currentUser) {
-        return res
-          .status(200)
-          .send(currentUser);
-      }
-      return res
-        .status(404)
-        .send({
-          message: 'Нет пользователя с таким ID'
-        })
-    })
-    .catch(error => {
-      res
-        .status(500)
-        .send('Error');
-      console.log(error);
-    });
-});
-
-module.exports = router; // экспортируем express router
+module.exports = userRouter;
