@@ -5,6 +5,7 @@ const cardRouter = require('./routes/cards');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const rateLimit = require('express-rate-limit');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -16,11 +17,18 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true
 });
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 минут
+  max: 100, // допустимый лимит: 100 запросов с одного IP
+});
+
+app.use(limiter);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   req.user = {
     _id: '5f4b7a5c166cd42c084fecb0' //  _id пользователя
+   // _id: '5f4b7a5c166cd42c084fecb1'
   };
   next();
 });

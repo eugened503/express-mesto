@@ -5,29 +5,42 @@ const Card = require('../models/cards');
 module.exports.createCard = (req, res) => { //создаем карточку
   const { name, link, owner = req.user._id } = req.body;
   Card.create({ name, link, owner })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
-      res.status(err.message ? 400 : 500).send({ message: err.message || 'На сервере произошла ошибка' });
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные в метод создания карточки' })
+        return;
+      } else {
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      }
     });
 };
 
 module.exports.getAllCards = (req, res) => { //получаем все карточки
   Card.find({})
-    .then(card => res.send(card))
-    .catch((err) => {
-      res.status(err.message ? 400 : 500).send({ message: err.message || 'На сервере произошла ошибка' });
-    });
+    .then(card => res.status(200).send(card))
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.deleteCard = (req, res) => { //удаляем карточку по id
   Card.findById(req.params.cardId)
+    .orFail(new Error('NotValidId'))
     .then((card) => {
       Card.findByIdAndRemove(req.params.cardId)
-        .then(() => res.send(card))
-        .catch(err => res.status(500).send({ message: 'На сервере произошла ошибка' }));
+        .then(() => res.status(200).send(card))
+        .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
     })
     .catch((err) => {
-      res.status(err.message ? 404 : 500).send({ message: 'Карточка не найдена' || 'На сервере произошла ошибка' });
+      if (err.message === 'NotValidId') {
+        res.status(404).send({ message: 'Пользователя нет в базе' })
+        return;
+      }
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные в метод удаления карточки' })
+        return;
+      } else {
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      }
     });
 };
 
@@ -37,8 +50,20 @@ module.exports.putLike = (req, res) => { //ставим лайк карточк�
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .then((card) => res.send({ data: card }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+    .orFail(new Error('NotValidId'))
+    .then((card) => res.status(200).send({ data: card }))
+    .catch((err) => {
+      if (err.message === 'NotValidId') {
+        res.status(404).send({ message: 'Пользователя нет в базе' })
+        return;
+      }
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные в метод добавления лайка' })
+        return;
+      } else {
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      }
+    });
 };
 
 module.exports.deleteLike = (req, res) => { //удаляем лайк с карточки по id
@@ -47,7 +72,19 @@ module.exports.deleteLike = (req, res) => { //удаляем лайк с кар�
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .then((card) => res.send({ data: card }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+    .orFail(new Error('NotValidId'))
+    .then((card) => res.status(200).send({ data: card }))
+    .catch((err) => {
+      if (err.message === 'NotValidId') {
+        res.status(404).send({ message: 'Пользователя нет в базе' })
+        return;
+      }
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные в метод удаления лайка' })
+        return;
+      } else {
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      }
+    });
 };
 

@@ -20,10 +20,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator(v) {
-        return /https?:\/\/(?:[-\w]+\.)?([-\w]+)\.\w+(?:\.\w+)?\/?.*/.test(v);
-      },
-      message: (props) => `${props.value} не является ссылкой`,
+    validator: (link) => /https?:\/\/(www\.)?(?:[-\w.]+\.[a-z]+)(?:\/[-\w@\/]*#?)?(?:.(?:jpg|jpeg|png))?/.test(link),
+    message: (props) => `${props.value} не является ссылкой`,
     },
   },
 

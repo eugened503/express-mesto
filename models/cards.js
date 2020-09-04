@@ -14,7 +14,7 @@ const cardsSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: function (v) {
-        return /https?:\/{2}\S+/gi.test(v);
+        return /https?:\/\/(www\.)?(?:[-\w.]+\.[a-z]+)(?:\/[-\w@\/]*#?)?(?:.(?:jpg|jpeg|png))?/.test(v);
       },
       message: props => `Ссылка${props.value} введена ошибочно`
     },
